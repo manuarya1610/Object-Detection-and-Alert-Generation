@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/Icons">
+        <file>Icons/landscapev1.png</file>
+        <file>Icons/cancel (1).png</file>
+        <file>Icons/minimize-sign.png</file>
+    </qresource>
+    <qresource prefix="/Background">
+        <file>Background/logo.png</file>
+        <file>Background/Splash_Screen.png</file>
+        <file>Background/Background.png</file>
+    </qresource>
+</RCC>
