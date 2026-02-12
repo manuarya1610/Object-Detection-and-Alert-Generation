@@ -1,0 +1,124 @@
+meta:
+  generated_on: "2026-02-12"
+  generated_by: "Codex (GPT-5)"
+  repository: "/Users/manuarya/Documents/GitHub/Object-Detection-and-Alert-Generation"
+
+project:
+  name: "Object-Detection-and-Alert-Generation"
+  type: "Qt desktop application (C++/OpenCV)"
+  target_binary: "opencvtest"
+  core_stack:
+    - "Qt 5 Widgets"
+    - "OpenCV 4.5.4 (core/highgui/imgproc/imgcodecs/videoio/dnn)"
+    - "YOLOv5 ONNX model inference"
+    - "QNetworkAccessManager (FTP upload)"
+    - "QTcpSocket (local TCP alert)"
+  primary_goal: "Detect objects from RTSP/video/image/camera sources and trigger screenshot-based alerts."
+
+what_it_achieves:
+  - "Runs live object detection using YOLOv5 and overlays class labels and bounding boxes."
+  - "Supports filtered monitoring for person/truck/car/motorbike/boat."
+  - "Allows screenshot capture with timestamp overlays."
+  - "Can send alert metadata to a local TCP endpoint."
+  - "Can upload captured screenshots to an FTP endpoint."
+  - "Provides a styled frameless UI with source/mode controls and simple operations."
+
+code_map:
+  - path: "/Users/manuarya/Documents/GitHub/Object-Detection-and-Alert-Generation/Code/main.cpp"
+    role: "App bootstrap, splash screen, main window startup, test TCP connect call."
+  - path: "/Users/manuarya/Documents/GitHub/Object-Detection-and-Alert-Generation/Code/mainwindow.h"
+    role: "Main window class contract, slots, socket/network/video members."
+  - path: "/Users/manuarya/Documents/GitHub/Object-Detection-and-Alert-Generation/Code/mainwindow.cpp"
+    role: "Detection pipeline, UI event handling, screenshot logic, FTP upload, TCP alert send."
+  - path: "/Users/manuarya/Documents/GitHub/Object-Detection-and-Alert-Generation/Code/mainwindow.ui"
+    role: "Designer-owned UI layout and widget definitions."
+  - path: "/Users/manuarya/Documents/GitHub/Object-Detection-and-Alert-Generation/Code/User_Interface.pro"
+    role: "qmake project configuration and OpenCV linkage."
+  - path: "/Users/manuarya/Documents/GitHub/Object-Detection-and-Alert-Generation/Code/Source.qrc"
+    role: "Qt resource registration for icons/backgrounds."
+  - path: "/Users/manuarya/Documents/GitHub/Object-Detection-and-Alert-Generation/Code/Algorithm/coco.names"
+    role: "COCO class list."
+  - path: "/Users/manuarya/Documents/GitHub/Object-Detection-and-Alert-Generation/Code/Algorithm/yolov5s.onnx"
+    role: "YOLOv5 model weights for OpenCV DNN inference."
+
+runtime_flow:
+  startup:
+    - "QApplication starts; splash screen shown."
+    - "MainWindow created and displayed after timer delay."
+    - "A second MainWindow instance calls Connect() once at startup."
+  detection:
+    - "Source path/URL selected in UI."
+    - "VideoCapture opened from user-provided source."
+    - "Frame padded to square and resized to 640x640 input space."
+    - "OpenCV DNN forward pass on YOLOv5 ONNX output tensor."
+    - "Detections filtered by confidence/class score and NMS."
+    - "Bounding boxes + labels drawn on frame and shown in QGraphicsView."
+  alerting:
+    - "If screenshot checkbox enabled, every few detection iterations screenshot is saved."
+    - "If TCP alert checkbox enabled, object class message sent to 127.0.0.1:80."
+    - "If FTP alert checkbox enabled, saved screenshot uploaded to configured FTP URL."
+
+amazing_things:
+  - "End-to-end pipeline in a compact codebase: capture -> infer -> visualize -> alert."
+  - "Real-time inference path supports both CPU and optional CUDA backend selection."
+  - "Practical operations focus: filters, source switching, screenshot evidence, outbound alerts."
+  - "Strong demo value: one UI can show detection plus downstream notification mechanisms."
+  - "Rich visual theming and custom frameless window interactions."
+
+constraints_and_risks:
+  portability:
+    - "Model/class file paths are hardcoded to a Windows absolute path inside source."
+    - "qmake/OpenCV linkage in .pro is Windows-directory specific."
+  correctness:
+    - "Screenshot pre-check logic blocks start whenever screenshot checkbox is checked."
+    - "Detection loop opens local capture object but screenshot path checks a different capture member."
+    - "Image/Camera source options are present in UI but not implemented with distinct logic."
+    - "Per-detection loop may break early on first non-matching filtered class."
+    - "Main creates a second MainWindow object only for Connect(), causing redundant object creation."
+  security:
+    - "FTP credentials are hardcoded as admin/admin."
+    - "Plain FTP and local TCP channel are unencrypted."
+  maintainability:
+    - "Repository includes generated/debug artifacts and user-specific Qt Creator config."
+    - "Mixed global state and UI state make behavior harder to test and reason about."
+
+quick_improvements:
+  - "Load model/class files from relative paths or user-configurable settings."
+  - "Unify video capture usage (single capture object) and fix screenshot gating behavior."
+  - "Implement dedicated flow for Image and Camera sources."
+  - "Replace hardcoded credentials with secure user-provided secrets."
+  - "Remove generated binaries/object files from version control; add .gitignore."
+  - "Add logging and minimal tests for detect/filter/alert triggers."
+
+actionable_prompt_for_codex: |
+  You are analyzing and improving the repository:
+  /Users/manuarya/Documents/GitHub/Object-Detection-and-Alert-Generation
+
+  Mission:
+  1) Understand current behavior end-to-end.
+  2) Preserve working detection features.
+  3) Improve portability, reliability, and security in small safe increments.
+
+  Operating rules:
+  - Read source of truth files first:
+    Code/main.cpp, Code/mainwindow.h, Code/mainwindow.cpp, Code/mainwindow.ui, Code/User_Interface.pro, Code/Source.qrc.
+  - Treat generated files under Code/debug and generated ui_*.h/moc_* as build artifacts unless debugging build issues.
+  - Prefer minimal, reviewable patches; avoid broad refactors without test evidence.
+  - For each change: explain why, show affected files, and state behavior impact.
+  - Validate by building/running tests where possible; if not possible, state what could not be verified.
+
+  High-priority backlog:
+  - [P1] Remove hardcoded absolute model/class paths and load from app-relative paths.
+  - [P1] Fix start/screenshot logic so monitoring works when screenshots are enabled.
+  - [P1] Use a single consistent VideoCapture path for stream + screenshot.
+  - [P1] Eliminate hardcoded FTP credentials and insecure defaults.
+  - [P2] Implement source-specific behavior for RTSP, Video, Image, Camera.
+  - [P2] Remove extra MainWindow instance in startup.
+  - [P2] Add clear error surfaces for missing model/classes/network failures.
+  - [P3] Clean repository artifacts and add .gitignore.
+
+  Deliverable format for each session:
+  - Summary: what was changed.
+  - Technical details: key code paths and decisions.
+  - Validation: commands run and outcomes.
+  - Remaining risks and next recommended step.
